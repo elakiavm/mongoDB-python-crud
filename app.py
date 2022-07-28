@@ -10,106 +10,115 @@ app = Flask(__name__)
 
 load_dotenv()
 
-	
-MONGO_URI = os.environ.get('MONGO_URI')
 
-mongo = MongoClient(MONGO_URI)
-database = mongo['data']
-collection = database['student_info']
+# MONGO_URI = os.environ.get('MONGO_URI')
+
+cluster = MongoClient('mongodb+srv://elakia:Kvtohindu@cluster0.dyhgo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+db = cluster['hollywood']
+col = db['movies']
+
+def get_last_movie_id():
+    # last_movie_id = col.find().sort([('movie_id', -1)]).limit(1)
+    last_movie_id  = col.find().sort([('movie_id', -1)]).limit(1)
+
+    try:
+        last_movie_id = last_movie_id[0]['movie_id']
+
+    except:
+        last_movie_id = 0
+
+    return last_movie_id
+
+
 @app.route("/", methods=['POST'])
 
 def startpy():
 
+    name = request.json['name']
+    genre = request.json['genre']
     
+    last_movie_id = get_last_movie_id()
 
-    details_dict = {
-        "reg_no":312320,
-        "name"  : "Nagulraj",
-        "year"  : 2,
-        "dept"  : "CSE"
+    current_movie_id = last_movie_id + 1
+
+    movie_dict = {
+
+        "movie_id": current_movie_id,
+        "name": name,
+        "genre": genre
 
     }
 
-   
-    collection.insert_one(details_dict)
+    col.insert_one(movie_dict)
 
     return "success"
 
    
 @app.route("/get", methods=['GET'])
 
-def get_all_details():
+def get_all_movie():
 
-    student_details = collection.find()
-    print(student_details)
+    movie = col.find()
+    print(movie)
 
-    student_list = []
+    movie_list = []
 
-    for detail in student_details:
+    for item in movie:
 
-        student_dict = {
-    
-            "reg_no": detail['reg_no'],
-            "name"  : detail['name'],
-            "year"  : detail['year'],
-            "dept"  : detail['dept']
+        movie_dict = {
+            "movie_id": item['movie_id'],
+            "name": item['name'],
+            "genre": item['genre']
 
         }
 
-        student_list.append(student_dict)
+        movie_list.append(movie_dict)
 
-        print(detail)
+        print(item)
     
-    return jsonify(student_list)
+    return jsonify(movie_list)
 
-@app.route("/get/<reg_no>", methods=['GET'])
+@app.route("/get/<movie_id>", methods=['GET'])
 
-def get_one_detail(reg_no):
+def get_one_movie(movie_id):
 
-    student = collection.find_one({'reg_no': int(reg_no)})
-    print(student)
+    movie = col.find_one({'movie_id': int(movie_id)})
+    print(movie)
 
    
-    student_dict = {
-        "name"  : student['name'],
-        "reg_no": student['reg_no'],
-        "year"  : student['year'],
-        "dept"  : student['dept']
+    movie_dict = {
+        "name": movie['name'],
+        "genre": movie['genre']
 
     }
 
-    
-    return student_dict
+    return movie_dict
 
-@app.route("/update/<reg_no>", methods=['POST'])
+@app.route("/edit/<movie_id>", methods=['POST'])
 
-def update_details(reg_no):
-    
+def edit_movie(movie_id):
+    # movie = col.find_one({'movie_id': int(movie_id)})
+
     name = request.json['name']
-    year = request.json['year']
+    genre = request.json['genre']
 
-    # name = "Nagulr"
-    # year = 2
-
-    student_dictionary = {
-
+    movie_dict = {
     
         "name": name,
-        "year": year
+        "genre": genre
 
     }
 
-    collection.update_many({'reg_no': int(reg_no)}, {'$set': student_dictionary})
+    col.update_many({'movie_id': int(movie_id)}, {'$set': movie_dict})
     
     return 'success'
     
-@app.route("/delete/<reg_no>", methods=['POST'])
+@app.route("/delete/<movie_id>", methods=['DELETE'])
 
-def delete_one_student(reg_no):
+def delete_one_movie(movie_id):
 
-    collection.delete_many({'reg_no': int(reg_no)})
+    col.delete_many({'movie_id': int(movie_id)})
 
     return 'success'
 if __name__ == "__main__":
     app.run()
-    startpy()
