@@ -1,0 +1,4 @@
+flask
+crypt
+pymongo
+python-dotenv

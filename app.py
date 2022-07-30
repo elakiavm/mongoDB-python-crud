@@ -1,3 +1,16 @@
+'''
+Created on 
+    March 26, 202
+
+Course work: 
+    MongoDB CURD
+    
+@author: Elakia
+
+Source:
+    
+'''
+
 from crypt import methods
 from flask import Flask, request, jsonify
 import pymongo
