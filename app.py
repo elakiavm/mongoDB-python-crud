@@ -11,14 +11,14 @@ app = Flask(__name__)
 load_dotenv()
 
 
-# MONGO_URI = os.environ.get('MONGO_URI')
+MONGO_URI = os.environ.get('MONGO_URI')
 
-cluster = MongoClient('mongodb+srv://elakia:Kvtohindu@cluster0.dyhgo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
-db = cluster['hollywood']
-col = db['movies']
+cluster = MongoClient('MONGO_URI')
+db      = cluster['hollywood']
+col     = db['movies']
 
 def get_last_movie_id():
-    # last_movie_id = col.find().sort([('movie_id', -1)]).limit(1)
+
     last_movie_id  = col.find().sort([('movie_id', -1)]).limit(1)
 
     try:
@@ -44,8 +44,8 @@ def startpy():
     movie_dict = {
 
         "movie_id": current_movie_id,
-        "name": name,
-        "genre": genre
+        "name"    : name,
+        "genre"   : genre
 
     }
 
@@ -67,8 +67,8 @@ def get_all_movie():
 
         movie_dict = {
             "movie_id": item['movie_id'],
-            "name": item['name'],
-            "genre": item['genre']
+            "name"    : item['name'],
+            "genre"   : item['genre']
 
         }
 
@@ -87,7 +87,7 @@ def get_one_movie(movie_id):
 
    
     movie_dict = {
-        "name": movie['name'],
+        "name" : movie['name'],
         "genre": movie['genre']
 
     }
@@ -99,12 +99,12 @@ def get_one_movie(movie_id):
 def edit_movie(movie_id):
     # movie = col.find_one({'movie_id': int(movie_id)})
 
-    name = request.json['name']
+    name  = request.json['name']
     genre = request.json['genre']
 
     movie_dict = {
     
-        "name": name,
+        "name" : name,
         "genre": genre
 
     }
