@@ -23,13 +23,19 @@ app = Flask(__name__)
 
 load_dotenv()
 
-
+# Getting the url from the  env file
 MONGO_URI = os.environ.get('MONGO_URI')
 
+# connecting to the mongoDb client 
 cluster = MongoClient('MONGO_URI')
+
+# giving the cluster name 
 db      = cluster['hollywood']
+
+# giving the collection name 
 col     = db['movies']
 
+# for incrementing the entries
 def get_last_movie_id():
 
     last_movie_id  = col.find().sort([('movie_id', -1)]).limit(1)
@@ -42,12 +48,11 @@ def get_last_movie_id():
 
     return last_movie_id
 
-
+# inserting ech entire
 @app.route("/", methods=['POST'])
-
 def startpy():
 
-    name = request.json['name']
+    name  = request.json['name']
     genre = request.json['genre']
     
     last_movie_id = get_last_movie_id()
@@ -66,9 +71,8 @@ def startpy():
 
     return "success"
 
-   
+# seeing all the entries    
 @app.route("/get", methods=['GET'])
-
 def get_all_movie():
 
     movie = col.find()
@@ -91,8 +95,8 @@ def get_all_movie():
     
     return jsonify(movie_list)
 
+#for seeing the particular entire
 @app.route("/get/<movie_id>", methods=['GET'])
-
 def get_one_movie(movie_id):
 
     movie = col.find_one({'movie_id': int(movie_id)})
@@ -107,8 +111,8 @@ def get_one_movie(movie_id):
 
     return movie_dict
 
+# update the existing entire
 @app.route("/edit/<movie_id>", methods=['POST'])
-
 def edit_movie(movie_id):
     # movie = col.find_one({'movie_id': int(movie_id)})
 
@@ -127,7 +131,6 @@ def edit_movie(movie_id):
     return 'success'
     
 @app.route("/delete/<movie_id>", methods=['DELETE'])
-
 def delete_one_movie(movie_id):
 
     col.delete_many({'movie_id': int(movie_id)})
