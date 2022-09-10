@@ -27,7 +27,7 @@ load_dotenv()
 MONGO_URI = os.environ.get('MONGO_URI')
 
 # connecting to the mongoDb client 
-cluster = MongoClient('MONGO_URI')
+cluster = MongoClient(MONGO_URI)
 
 # giving the cluster name 
 db      = cluster['hollywood']
